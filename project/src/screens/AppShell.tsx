@@ -61,7 +61,7 @@ export function AppShell() {
         <div className="side-foot">
           <div className="workspace-status"><span className="status-pulse" />{isRecruiter ? 'Recruiter workspace' : 'Candidate workspace'}</div>
           <div className="user-card">
-            <Avatar seed={profile.id} name={profile.full_name} size={42} ring />
+            <Avatar seed={profile.id} name={profile.full_name} gender={profile.gender} size={42} ring />
             <div className="user-copy"><strong>{profile.full_name}</strong><span>{isRecruiter ? 'Recruiter' : 'Candidate'}</span></div>
             <button type="button" className="logout-btn" onClick={handleSignOut} aria-label="Sign out" title="Sign out"><LogOut size={16} /></button>
           </div>
@@ -70,7 +70,7 @@ export function AppShell() {
 
       <div className="mobile-top glass">
         <div className="brand"><div className="brand-mark"><Radar size={16} strokeWidth={2.5} /></div>TalentRadar</div>
-        <div className="mobile-user"><Avatar seed={profile.id} name={profile.full_name} size={34} ring /><button type="button" className="logout-btn" onClick={handleSignOut} aria-label="Sign out"><LogOut size={16} /></button></div>
+        <div className="mobile-user"><Avatar seed={profile.id} name={profile.full_name} gender={profile.gender} size={34} ring /><button type="button" className="logout-btn" onClick={handleSignOut} aria-label="Sign out"><LogOut size={16} /></button></div>
       </div>
 
       <main className="main" key={view}>
@@ -84,7 +84,7 @@ export function AppShell() {
       <Confetti fire={welcome ? 1 : 0} pieces={140} originY={0.3} />
       <Modal open={welcome} onClose={() => setWelcome(false)} maxWidth={440}>
         <div className="welcome">
-          <div className="welcome-avatar"><Avatar seed={profile.id} name={profile.full_name} size={132} ring /></div>
+          <div className="welcome-avatar"><Avatar seed={profile.id} name={profile.full_name} gender={profile.gender} size={132} ring /></div>
           <h2>Welcome, {firstName}</h2>
           <p>We generated a unique avatar for you. {isRecruiter ? 'Candidates will see it next to your roles.' : 'Recruiters will see it next to your applications.'}</p>
           <button className="btn btn-primary" onClick={() => setWelcome(false)}>Let's go</button>

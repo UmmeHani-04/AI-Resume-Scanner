@@ -8,13 +8,23 @@ import { HeroDemo } from '../components/HeroDemo'
 import { Reveal } from '../components/Reveal'
 import { NEW_SIGNUP_KEY } from './AppShell'
 
-const SHOWCASE = ['ada-lovelace', 'grace-h', 'linus-t', 'margaret-h', 'tim-bl', 'radia-p', 'ken-t']
+// Showcase seeds with explicit genders so avataaars renders proper illustrated characters
+const SHOWCASE: { seed: string; gender: 'female' | 'male' }[] = [
+  { seed: 'ada-lovelace',  gender: 'female' },
+  { seed: 'grace-h',       gender: 'female' },
+  { seed: 'linus-t',       gender: 'male'   },
+  { seed: 'margaret-h',    gender: 'female' },
+  { seed: 'tim-bl',        gender: 'male'   },
+  { seed: 'radia-p',       gender: 'female' },
+  { seed: 'ken-t',         gender: 'male'   },
+]
 
 export function LandingPage() {
   const { signIn, signUp } = useAuth()
   const { toast } = useToast()
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [role, setRole] = useState<UserRole>('candidate')
+  const [gender, setGender] = useState<'male' | 'female' | ''>('')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -30,8 +40,9 @@ export function LandingPage() {
         toast('Welcome back to your workspace.')
       } else {
         if (!fullName.trim()) throw new Error('Please enter your full name.')
+        if (!gender) throw new Error('Please select your gender to generate your avatar.')
         sessionStorage.setItem(NEW_SIGNUP_KEY, '1')
-        await signUp(email, password, fullName, role)
+        await signUp(email, password, fullName, role, gender)
         toast('Account created. Welcome to TalentRadar.')
       }
     } catch (err) {
@@ -66,7 +77,7 @@ export function LandingPage() {
             <a className="btn btn-glass btn-lg" href="#workflow">See how it works</a>
           </div>
           <div className="proof-row">
-            <div className="avatar-stack">{SHOWCASE.slice(0, 5).map((s) => <Avatar key={s} seed={s} size={38} />)}</div>
+            <div className="avatar-stack">{SHOWCASE.slice(0, 5).map((s) => <Avatar key={s.seed} seed={s.seed} gender={s.gender} size={38} />)}</div>
             <span>Every candidate gets their own avatar,<br />so profiles are easy to recognise.</span>
           </div>
         </div>
@@ -79,8 +90,8 @@ export function LandingPage() {
           <p>Sign up and we generate a one-of-a-kind avatar for you. It shows up on your dashboard, in applications, and in every recruiter list.</p>
           <div className="picker">
             {SHOWCASE.map((s, i) => (
-              <button key={s} type="button" className={`picker-item ${pick === i ? 'on' : ''}`} onMouseEnter={() => setPick(i)} onFocus={() => setPick(i)} aria-label={`Sample avatar ${i + 1}`}>
-                <Avatar seed={s} size={pick === i ? 96 : 64} />
+              <button key={s.seed} type="button" className={`picker-item ${pick === i ? 'on' : ''}`} onMouseEnter={() => setPick(i)} onFocus={() => setPick(i)} aria-label={`Sample avatar ${i + 1}`}>
+                <Avatar seed={s.seed} gender={s.gender} size={pick === i ? 96 : 64} />
               </button>
             ))}
           </div>
@@ -117,6 +128,25 @@ export function LandingPage() {
                   <button type="button" className={`role-choice ${role === 'candidate' ? 'active' : ''}`} onClick={() => setRole('candidate')}><Users size={18} /><strong>Candidate</strong><span>Find your next role</span></button>
                   <button type="button" className={`role-choice ${role === 'recruiter' ? 'active' : ''}`} onClick={() => setRole('recruiter')}><Briefcase size={18} /><strong>Recruiter</strong><span>Build your shortlist</span></button>
                 </div>
+              </div>
+            )}
+            {mode === 'register' && (
+              <div className="field">
+                <label>Your avatar gender</label>
+                <div className="role-switch">
+                  <button type="button" className={`role-choice gender-choice ${gender === 'male' ? 'active' : ''}`} onClick={() => setGender('male')}>
+                    <span className="gender-emoji">👨</span><strong>Male</strong><span>Guy avatar</span>
+                  </button>
+                  <button type="button" className={`role-choice gender-choice ${gender === 'female' ? 'active' : ''}`} onClick={() => setGender('female')}>
+                    <span className="gender-emoji">👩</span><strong>Female</strong><span>Girl avatar</span>
+                  </button>
+                </div>
+                {gender && (
+                  <div className="gender-preview">
+                    <Avatar seed={email || 'preview'} gender={gender} size={72} ring />
+                    <span className="gender-preview-label">Your avatar preview</span>
+                  </div>
+                )}
               </div>
             )}
             <button className="btn btn-primary btn-lg full" type="submit" disabled={submitting}>

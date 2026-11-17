@@ -1,0 +1,34 @@
+/* ─── Gender selection & avatar preview ──────────────────────────── */
+
+.gender-choice {
+  gap: 6px;
+}
+
+.gender-emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* Live avatar preview under the gender picker */
+.gender-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 0 4px;
+  animation: fadeSlideUp 0.3s ease both;
+}
+
+.gender-preview-label {
+  font-size: 0.72rem;
+  color: var(--muted, #8b8fa8);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -11,7 +11,7 @@ interface AuthContextValue {
   profile: Profile | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string, fullName: string, role: UserRole) => Promise<void>
+  signUp: (email: string, password: string, fullName: string, role: UserRole, gender?: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -46,11 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false)
   }, [])
 
-  const saveAuth = (token: string, user: { id: string; email: string; full_name: string; role: UserRole; created_at?: string }) => {
+  const saveAuth = (token: string, user: { id: string; email: string; full_name: string; role: UserRole; gender?: string | null; created_at?: string }) => {
     const userProfile: Profile = {
       id: user.id,
       full_name: user.full_name,
       role: user.role,
+      gender: user.gender || null,
       created_at: user.created_at || new Date().toISOString(),
     }
     localStorage.setItem('talentradar_token', token)
@@ -72,11 +73,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     saveAuth(data.token, data.user)
   }
 
-  const signUp = async (email: string, password: string, fullName: string, role: UserRole) => {
+  const signUp = async (email: string, password: string, fullName: string, role: UserRole, gender?: string) => {
     const response = await fetch(`${API_URL}/api/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.trim().toLowerCase(), password, full_name: fullName.trim(), role }),
+      body: JSON.stringify({ email: email.trim().toLowerCase(), password, full_name: fullName.trim(), role, gender: gender || null }),
     })
     const data = await response.json().catch(() => null)
     if (!response.ok) throw new Error(data?.message || 'Sign-up failed')

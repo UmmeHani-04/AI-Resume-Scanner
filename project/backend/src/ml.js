@@ -24,12 +24,17 @@ const SYNONYMS = {
   aws: ['aws', 'amazon web services'],
 }
 
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 function extractSkills(text) {
   const low = ' ' + text.toLowerCase() + ' '
   const found = new Set()
   for (const [canonical, variants] of Object.entries(SYNONYMS)) {
     for (const v of variants) {
-      const reg = new RegExp(`(?<![a-z0-9+#./])${v.replace(/[.*+?^${}()|[\\]\\/]/g, '\\$&')}(?![a-z0-9+#])`)
+      const escaped = escapeRegex(v)
+      const reg = new RegExp('(?<![a-z0-9+#./])' + escaped + '(?![a-z0-9+#])')
       if (reg.test(low)) {
         found.add(canonical)
         break
