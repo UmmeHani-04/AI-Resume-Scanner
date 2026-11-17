@@ -3,7 +3,8 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { pool } from '../db.js'
 const router = express.Router()
-const tokenFor = user => jwt.sign({ id:user.id, email:user.email, role:user.role }, process.env.JWT_SECRET, { expiresIn:'7d' })
+const JWT_SECRET = process.env.JWT_SECRET || 'talentradar_super_secret_key_2026'
+const tokenFor = user => jwt.sign({ id:user.id, email:user.email, role:user.role }, JWT_SECRET, { expiresIn:'7d' })
 router.post('/signup', async (req,res) => {
   try {
     const { email, password, full_name, role } = req.body

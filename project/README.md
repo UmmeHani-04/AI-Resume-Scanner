@@ -1,56 +1,117 @@
-# TalentRadar Connect
+# TalentRadar Connect — AI-Powered ATS Recruitment & Resume Intelligence Platform
 
-React/Vite frontend + Node/Express API + PostgreSQL.
+TalentRadar Connect is an enterprise-ready candidate recruitment and job-specific resume evaluation platform. It combines a modern React + TypeScript frontend with a Node.js/Express API, PostgreSQL database, and a Python-powered ATS Intelligence engine.
 
-## 1. Database
-Create a PostgreSQL database named `talentradar`, then run `backend/schema.sql` against it.
+---
 
-## 2. Backend
-Copy `backend/.env.example` to `backend/.env` and fill in your PostgreSQL password and a JWT secret.
+## 🚀 Quick Start (One-Click)
 
+On Windows, double-click:
+```
+project\start-all.bat
+```
+This script automatically opens 3 separate terminal windows:
+1. **ML Service (Port 8000)**: Python ATS Intelligence Service
+2. **Backend (Port 5000)**: Node.js / Express REST API
+3. **Frontend (Port 5173)**: Vite + React UI
+
+Once the windows say running, open your browser at:
+👉 **[http://localhost:5173](http://localhost:5173)**
+
+---
+
+## 🛠️ Manual Startup (Step-by-Step)
+
+If you prefer to start each service in separate terminal windows:
+
+### 1. Database Setup
+1. Ensure PostgreSQL is installed and running on `localhost:5432`.
+2. Create the database:
+   ```sql
+   CREATE DATABASE talentradar;
+   ```
+3. Run `backend/schema.sql` against `talentradar` to initialize the tables (`users`, `profiles`, `jobs`, `applications`).
+
+### 2. ML Service (Port 8000)
 ```powershell
-cd backend
+cd project/ml-service
+pip install -r requirements.txt
+python -m uvicorn main:app --port 8000
+```
+Health check: [http://localhost:8000/health](http://localhost:8000/health)
+
+### 3. Backend API (Port 5000)
+```powershell
+cd project/backend
 npm install
 npm start
 ```
+Health check: [http://localhost:5000/api/health](http://localhost:5000/api/health)
 
-API: `http://localhost:5000`
-
-## 3. Frontend
-In a second terminal:
-
+### 4. Frontend Application (Port 5173)
 ```powershell
 cd project
 npm install
 npm run dev
 ```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-If you are already inside the project folder, just run `npm install` then `npm run dev`.
+---
 
-## Important security note
-The app never stores passwords in localStorage/sessionStorage. It stores only the JWT, user, and profile. Login fields are configured not to request browser autocomplete. Browsers/password managers can still override autocomplete in some cases; shared computers should use separate browser profiles and should not save passwords.
+## 🌟 Upgraded Features & Capabilities
 
-## Fixed behavior
-- Candidate job list shows only open jobs not already applied to.
-- Recruiter job list is scoped to the logged-in recruiter.
-- Recruiter applicant lists are scoped to the selected job.
-- Dashboard applicant/review/selected counts come from the logged-in user's applications.
-- Candidate Apply opens the correct application modal and Cancel returns to Browse jobs.
-- Duplicate applications are blocked at both API and database level.
-- Passwords are hashed with bcrypt and never returned by the API.
-- Sign out clears all app auth storage.
+### 1. Zero Blank Screens & Smooth Infinite Scrolling
+- Protected with comprehensive React `ErrorBoundary` wrappers.
+- High-efficiency pagination and batch rendering (12 candidates/page) prevents DOM overload and GPU compositing crashes.
+- Robust null/undefined/NaN guards across candidate records, emails, timestamps, and SVG score rings.
 
+### 2. Fair, Deterministic, Gender-Neutral Avatars
+- Explicit candidate gender is used ONLY when explicitly recorded in candidate records; gender is NEVER assumed or guessed from names or photos.
+- Missing or unknown gender defaults to a deterministic, professional monogram initials avatar.
+- Profile photos take precedence with automatic fallback on load error.
 
-## AI matching (sentence-transformers)
+### 3. Job-Specific ATS Scoring Engine
+- Normalized 6-dimension scoring model (summing to 100%):
+  * **Mandatory Skills Match (30%)**
+  * **Preferred Skills Match (10%)**
+  * **Relevant Experience Match (25%)**
+  * **Project Relevance & Evidence (15%)**
+  * **Education & Qualifications Alignment (10%)**
+  * **Job Responsibility & Semantic Fit (10%)**
+- Semantic skill matching recognizing aliases (`React.js` ↔ `React`, `PostgreSQL` ↔ `SQL`, `REST APIs` ↔ `API development`).
+- Differentiates candidates based on actual evidence rather than generic keyword counts.
 
+### 4. Dynamic Candidate Ranking
+- Candidates are ranked based on their actual job-specific evaluation score.
+- Rank #1 badge awarded to the candidate with the highest verified score.
+- Toggle between "Rank (Best Match)" and "Latest Applied".
+
+### 5. Explainable Candidate Score Breakdown
+- Visual progress bars for Skills Match, Experience, Education, and Project Relevance.
+- Clear itemization of matching requirements vs missing mandatory skills.
+- Transparent recruiter notes, potential concerns, and candidate improvement suggestions.
+
+### 6. Side-by-Side Candidate Comparison
+- Select 2 or 3 candidates using the checkboxes on candidate cards.
+- Click **"Compare Candidates"** to open a comprehensive side-by-side comparison modal evaluating scores, technical skills, verified experience, education, projects, and key differentiators.
+
+---
+
+## 🔒 Environment Variables
+
+### Backend (`backend/.env`):
+```env
+PORT=5000
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=talentradar
+DB_USER=postgres
+DB_PASSWORD=YOUR_POSTGRES_PASSWORD
+JWT_SECRET=YOUR_SECURE_JWT_SECRET
+ML_SERVICE_URL=http://localhost:8000
 ```
-React (5173) -> Express (5000) -> Python ML service (8000, all-MiniLM-L6-v2) 
-                     |
-                PostgreSQL
+
+### Frontend (`.env`):
+```env
+VITE_API_URL=http://localhost:5000
 ```
-
-Score = 50% semantic similarity (embedding cosine) + 30% skill overlap + 20% experience match.
-Scoring runs on the server (`POST /api/applications/:id/analyze`), never in the browser.
-
-Run: double-click `start-all.bat` (Windows), or start `ml-service` (uvicorn main:app --port 8000),
-`backend` (npm start) and the frontend (npm run dev) separately.

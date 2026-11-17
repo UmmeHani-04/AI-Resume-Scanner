@@ -1,16 +1,22 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
 import { App } from './App'
 import { AuthProvider } from './lib/auth'
 import { ToastProvider } from './lib/toast'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import './styles/global.css'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <ToastProvider>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <ErrorBoundary
+      fallbackTitle="Application encountered an error"
+      fallbackMessage="An unexpected issue occurred. Please refresh the page to continue."
+    >
       <AuthProvider>
-        <App />
+        <ToastProvider>
+          <App />
+        </ToastProvider>
       </AuthProvider>
-    </ToastProvider>
-  </StrictMode>
+    </ErrorBoundary>
+  </React.StrictMode>,
 )

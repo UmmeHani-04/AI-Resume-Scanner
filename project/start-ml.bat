@@ -1,6 +1,6 @@
 @echo off
 cd /d "%~dp0ml-service"
-if not exist venv ( python -m venv venv )
-call venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn main:app --port 8000
+if exist venv\Scripts\activate.bat (
+  call venv\Scripts\activate.bat
+)
+python -m uvicorn main:app --port 8000

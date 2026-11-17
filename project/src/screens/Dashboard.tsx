@@ -44,7 +44,9 @@ export function Dashboard({ isRecruiter, onNavigate, onViewApplicants, onApply }
     { label: 'Selected', value: selected, color: '#1fcf9f' },
     { label: 'Not selected', value: count('rejected'), color: '#ff5d8f' },
   ]
-  const scores = applications.filter((a) => a.semantic_score !== null).map((a) => a.semantic_score as number)
+  const scores = applications
+    .filter((a) => Number.isFinite(a.semantic_score))
+    .map((a) => Math.round(Number(a.semantic_score)))
   const firstName = profile.full_name.split(' ')[0]
 
   return (
